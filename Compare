@@ -74,7 +74,7 @@ $htmlTable = new \App\service\htmlTable($tableHead, $rows);
 
 $file = '/tmp/issue-estimate-compare-' . date ('Y-m-d-H:i:s', time()) . '.html';
 
-$output = "<h1>Repport generated for sprint [$sprint] " . $sprintList[$sprint] . ' at '  . date ('d/m Y H:i') . "</h1>";
+$output = "<h1>Report generated for sprint [$sprint] " . $sprintList[$sprint] . ' at '  . date ('d/m Y H:i') . "</h1>";
 $output .= $htmlTable->render();
 file_put_contents($file, $output);
 
