@@ -1,0 +1,57 @@
+#!/usr/bin/env php
+<?php
+
+use App\repository\issueRepository;
+use App\service\htmlLink;
+use App\service\configuration;
+use App\service\bootstrap;
+
+exec('clear');
+if(!file_exists('vendor/autoload.php')) {
+    print("Running composer install\n\r");
+    $dir = __DIR__;
+    if (!exec("cd $dir && composer -q install")) {
+        print "If this fails you need to install composer, see here: https://getcomposer.org/download/ \n\r";
+    }
+}
+
+require 'vendor/autoload.php';
+
+$configuration = new configuration();
+$bootstrap = new bootstrap($configuration);
+$bootstrap->init();
+
+$repository = new issueRepository($configuration);
+
+print("Please wait while report is being generated, it will automatically open a browser window\n\r");
+
+$issues = $repository->getIssues();
+
+$tableHead = ['ADP', 'Linked issues', 'ADP estimate', 'AU combined estinate', 'Diff'];
+
+$rows = [];
+foreach ($issues as $issue) {
+
+    $linkedIssueLinks = array_map(function($issue) {
+        return htmlLink::renderIssueLink($issue->key);
+    }, $issue->linked);
+
+    $rows[] = [htmlLink::renderIssueLink($issue->key), implode(" ", $linkedIssueLinks), $issue->estimate, $issue->linkedAggregatedEstimate, $issue->estimate - $issue->linkedAggregatedEstimate];
+}
+
+$htmlTable = new \App\service\htmlTable($tableHead, $rows);
+
+$file = '/tmp/issue-estimate-compare-' . date ('Y-m-d-H:i:s', time()) . '.html';
+
+$jiraClient = $repository->getJiraClient();
+$jiraSearchUrl = $jiraClient->getJiraUrl() . 'issues?' . http_build_query(['jql' => $jiraClient->getIssuesJQL()]);
+
+$output = "<h1>Repport generated " . date ('d/m Y H:i') . "</h1>";
+$output .= $htmlTable->render();
+$output .= '<h3>' . sprintf('Based on data from the following url query <a href="%s" target="_blank">Issue search</a>', $jiraSearchUrl);
+file_put_contents($file, $output);
+
+exec('open ' . $file);
+
+
+

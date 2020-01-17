@@ -1,0 +1,21 @@
+{
+    "name": "rune/estimat-compare",
+    "type": "project",
+    "require": {
+        "seld/cli-prompt": "^1.0@dev",
+        "guzzlehttp/guzzle": "^7.0@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rune Ivanovic-Andersen",
+            "email": "rune@adaptagency.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "minimum-stability": "dev"
+}
