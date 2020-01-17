@@ -10,7 +10,16 @@ exec('clear');
 if(!file_exists('vendor/autoload.php')) {
     print("Running composer install\n\r");
     $dir = __DIR__;
-    if (!exec("cd $dir && composer -q install")) {
+    
+    $composer_default_path = $_SERVER['HOME'] . '/composer.phar';
+    if (file_exists($composer_default_path)) {
+        $composer_executor = 'php ~/composer.phar';
+    }
+    else {
+        $composer_executor = 'composer';
+    }
+
+    if (!exec("cd $dir && $composer_executor -q install")) {
         print "If this fails you need to install composer, see here: https://getcomposer.org/download/ \n\r";
     }
 }
