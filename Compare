@@ -5,6 +5,7 @@ use App\repository\issueRepository;
 use App\service\htmlLink;
 use App\service\configuration;
 use App\service\bootstrap;
+use Seld\CliPrompt\CliPrompt;
 
 exec('clear');
 if(!file_exists('vendor/autoload.php')) {
@@ -32,9 +33,30 @@ $bootstrap->init();
 
 $repository = new issueRepository($configuration);
 
+$jiraClient = $repository->getJiraClient();
+
+$sprintList = $jiraClient->getSprintList();
+
+print "Select sprint\n\r";
+$list = [];
+foreach ($sprintList as $id => $name) {
+   $list[] = "[$id] $name";
+}
+
+print (implode("\n\r", $list) . "\n\r");
+$sprintIds = array_keys($sprintList);
+$defaultSprint = reset($sprintIds);
+print(sprintf("type sprint id default [%s]\n\r", $defaultSprint));
+$sprint = CliPrompt::prompt();
+
+
+if ($sprint === null) {
+    $sprint = $defaultSprint;
+}
+
 print("Please wait while report is being generated, it will automatically open a browser window\n\r");
 
-$issues = $repository->getIssues();
+$issues = $repository->getIssues($sprint);
 
 $tableHead = ['ADP', 'Linked issues', 'ADP estimate', 'AU combined estinate', 'Diff'];
 
@@ -52,12 +74,8 @@ $htmlTable = new \App\service\htmlTable($tableHead, $rows);
 
 $file = '/tmp/issue-estimate-compare-' . date ('Y-m-d-H:i:s', time()) . '.html';
 
-$jiraClient = $repository->getJiraClient();
-$jiraSearchUrl = $jiraClient->getJiraUrl() . 'issues?' . http_build_query(['jql' => $jiraClient->getIssuesJQL()]);
-
-$output = "<h1>Repport generated " . date ('d/m Y H:i') . "</h1>";
+$output = "<h1>Repport generated for sprint [$sprint] " . $sprintList[$sprint] . ' at '  . date ('d/m Y H:i') . "</h1>";
 $output .= $htmlTable->render();
-$output .= '<h3>' . sprintf('Based on data from the following url query <a href="%s" target="_blank">Issue search</a>', $jiraSearchUrl);
 file_put_contents($file, $output);
 
 exec('open ' . $file);

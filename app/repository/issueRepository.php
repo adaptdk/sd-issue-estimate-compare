@@ -33,10 +33,10 @@ class issueRepository
 
     }
 
-    public function getIssues() {
+    public function getIssues($sprint) {
 
         $issues = [];
-        foreach ($this->client->getIssues() as $issue) {
+        foreach ($this->client->getIssues($sprint) as $issue) {
 
             $linkedIssues = [];
             foreach ($issue->fields->issuelinks as $link) {

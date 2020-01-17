@@ -13,7 +13,7 @@ class jiraClient
 
     private $client;
 
-    const issuesJQL = 'project = ADP AND Sprint = 40 ORDER BY priority DESC';
+    const issuesJQL = 'project = ADP AND Sprint = %s ORDER BY priority DESC';
 
     const jiraUrl = 'https://sygeforsikringdk.atlassian.net/';
 
@@ -30,8 +30,8 @@ class jiraClient
         );
     }
 
-    public function getIssuesJQL() {
-        return self::issuesJQL;
+    public function getIssuesJQL($sprint) {
+        return sprintf(self::issuesJQL, $sprint);
     }
 
     public function getJiraUrl() {
@@ -43,12 +43,28 @@ class jiraClient
         return json_decode($response->getBody());
     }
 
-    public function getIssues($count = 100) {
-        $response = $this->client->get('rest/api/2/search', ['query' => ['jql' => self::issuesJQL, 'maxResults' => $count]]);
+    public function getIssues($sprint, $count = 100) {
+        $response = $this->client->get('rest/api/2/search', ['query' => ['jql' => $this->getIssuesJQL($sprint), 'maxResults' => $count]]);
 
         $data = json_decode($response->getBody());
 
         return $data->issues;
+    }
+
+    public function getSprintList($board = 'Adapt Udvikling') {
+        $response = $this->client->get('/rest/greenhopper/1.0/sprint/picker');
+
+        $data = json_decode($response->getBody(), true);
+
+        $list = [];
+        $allSprints = array_merge($data['allMatches'], $data['suggestions']);
+        foreach ($allSprints as $sprint) {
+            if ($sprint['boardName'] === $board) {
+                $list[$sprint['id']] = $sprint['name'];
+            }
+        }
+
+        return $list;
     }
 
 
