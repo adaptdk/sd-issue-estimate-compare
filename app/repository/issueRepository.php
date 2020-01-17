@@ -44,12 +44,12 @@ class issueRepository
                     // Filter by linked AU issues
                     if (strpos($link->outwardIssue->key, 'AU') === 0) {
                         $linkedIssue = $this->client->getIssueByKey($link->outwardIssue->id);
-                        $linkedIssues[] = new issue($linkedIssue->id, $linkedIssue->key, [], $linkedIssue->fields->timeestimate);
+                        $linkedIssues[] = new issue($linkedIssue->fields->summary, $linkedIssue->id, $linkedIssue->key, [], $linkedIssue->fields->timeoriginalestimate);
                     }
                 }
 
             }
-            $issues[] = new issue($issue->id, $issue->key, $linkedIssues, $issue->fields->timeestimate);
+            $issues[] = new issue($linkedIssue->fields->summary, $issue->id, $issue->key, $linkedIssues, $issue->fields->timeoriginalestimate);
 
         }
 

@@ -50,7 +50,7 @@ print(sprintf("type sprint id default [%s]\n\r", $defaultSprint));
 $sprint = CliPrompt::prompt();
 
 
-if ($sprint === null) {
+if ($sprint === "") {
     $sprint = $defaultSprint;
 }
 
@@ -58,7 +58,7 @@ print("Please wait while report is being generated, it will automatically open a
 
 $issues = $repository->getIssues($sprint);
 
-$tableHead = ['ADP', 'Linked issues', 'ADP estimate', 'AU combined estinate', 'Diff'];
+$tableHead = ['title', 'ADP', 'Linked issues', 'ADP estimate', 'AU combined estinate', 'Diff'];
 
 $rows = [];
 foreach ($issues as $issue) {
@@ -67,7 +67,7 @@ foreach ($issues as $issue) {
         return htmlLink::renderIssueLink($issue->key);
     }, $issue->linked);
 
-    $rows[] = [htmlLink::renderIssueLink($issue->key), implode(" ", $linkedIssueLinks), $issue->estimate, $issue->linkedAggregatedEstimate, $issue->estimate - $issue->linkedAggregatedEstimate];
+    $rows[] = [$issue->summary, htmlLink::renderIssueLink($issue->key), implode(" ", $linkedIssueLinks), $issue->estimate, $issue->linkedAggregatedEstimate, $issue->estimate - $issue->linkedAggregatedEstimate];
 }
 
 $htmlTable = new \App\service\htmlTable($tableHead, $rows);

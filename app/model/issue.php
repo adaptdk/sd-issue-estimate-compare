@@ -14,6 +14,8 @@ use App\Service\timeConverter;
 class issue
 {
 
+    public $summary;
+
     public $id;
 
     public $key;
@@ -25,8 +27,9 @@ class issue
     public $linkedAggregatedEstimate;
 
 
-    public function __construct($id, $key, $linked = [], $estimate)
+    public function __construct($summary, $id, $key, $linked = [], $estimate)
     {
+        $this->summary = $summary;
         $this->id = $id;
         $this->key = $key;
         $this->linked = $linked;

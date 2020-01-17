@@ -51,7 +51,7 @@ class jiraClient
         return $data->issues;
     }
 
-    public function getSprintList($board = 'Adapt Udvikling') {
+    public function getSprintList($board = 'Sprint: Proces/System') {
         $response = $this->client->get('/rest/greenhopper/1.0/sprint/picker');
 
         $data = json_decode($response->getBody(), true);
@@ -66,9 +66,5 @@ class jiraClient
 
         return $list;
     }
-
-
-
-
 
 }
