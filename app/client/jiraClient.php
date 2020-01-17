@@ -51,7 +51,7 @@ class jiraClient
         return $data->issues;
     }
 
-    public function getSprintList($board = 'Sprint: Proces/System') {
+    public function getSprintList($boards = ['Sprint: Proces/System', 'Adapt Udvikling']) {
         $response = $this->client->get('/rest/greenhopper/1.0/sprint/picker');
 
         $data = json_decode($response->getBody(), true);
@@ -59,7 +59,7 @@ class jiraClient
         $list = [];
         $allSprints = array_merge($data['allMatches'], $data['suggestions']);
         foreach ($allSprints as $sprint) {
-            if ($sprint['boardName'] === $board) {
+            if (in_array($sprint['boardName'], $boards)) {
                 $list[$sprint['id']] = $sprint['name'];
             }
         }
