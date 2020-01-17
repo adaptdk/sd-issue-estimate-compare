@@ -49,7 +49,7 @@ class issueRepository
                 }
 
             }
-            $issues[] = new issue($linkedIssue->fields->summary, $issue->id, $issue->key, $linkedIssues, $issue->fields->timeoriginalestimate);
+            $issues[] = new issue($issue->fields->summary, $issue->id, $issue->key, $linkedIssues, $issue->fields->timeoriginalestimate);
 
         }
 
