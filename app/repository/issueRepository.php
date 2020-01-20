@@ -40,10 +40,12 @@ class issueRepository
 
             $linkedIssues = [];
             foreach ($issue->fields->issuelinks as $link) {
-                if (isset($link->outwardIssue)) {
+
+                $linked = $link->outwardIssue ?? $link->inwardIssue ?? null;
+                if ($linked !== null) {
                     // Filter by linked AU issues
-                    if (strpos($link->outwardIssue->key, 'AU') === 0) {
-                        $linkedIssue = $this->client->getIssueByKey($link->outwardIssue->id);
+                    if (strpos($linked->key, 'AU') === 0) {
+                        $linkedIssue = $this->client->getIssueByKey($linked->id);
                         $linkedIssues[] = new issue($linkedIssue->fields->summary, $linkedIssue->id, $linkedIssue->key, [], $linkedIssue->fields->timeoriginalestimate);
                     }
                 }
